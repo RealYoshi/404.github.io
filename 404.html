@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="static\css\glitch.css">
     <style>
         body {
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* IE10+/Edge */
-            user-select: none; /* Standard */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
@@ -56,7 +56,6 @@
                         </div>
 
                         <div class="terminal-history" id="terminal-history">
-                            <!-- Terminal history will be dynamically populated here -->
                         </div>
 
                         <div class="ascii-art hidden" id="ascii-art">
@@ -100,15 +99,13 @@
     </div>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Force scroll to top of the page when it loads
-                document.body.scrollTop = 0; // For Safari
-                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
 
                 const terminalHistory = document.getElementById('terminal-history');
                 const asciiArt = document.getElementById('ascii-art');
                 const terminalBody = document.querySelector('.terminal-body');
 
-                // Define the terminal commands and outputs
                 const terminalSequence = [
                     {
                         command: 'whoami',
@@ -128,7 +125,6 @@
                     }
                 ];
 
-                // Function to create a terminal line element
                 function createTerminalLine(prompt, command = '', isTyping = false) {
                     const lineDiv = document.createElement('div');
                     lineDiv.className = 'line';
@@ -148,7 +144,6 @@
                     return lineDiv;
                 }
 
-                // Function to type text character by character
                 function typeText(element, text, speed = 50) {
                     return new Promise(resolve => {
                         let i = 0;
@@ -156,7 +151,6 @@
                             if (i < text.length) {
                                 element.textContent += text.charAt(i);
                                 i++;
-                                // Smooth scroll to bottom while typing
                                 terminalBody.scrollTo({
                                     top: terminalBody.scrollHeight,
                                     behavior: 'smooth'
@@ -169,63 +163,48 @@
                     });
                 }
 
-                // Execute the terminal sequence with realistic typing animation
                 async function runTypingSequence() {
-                    // Clear terminal history
                     terminalHistory.innerHTML = '';
 
-                    // Run through each command in the sequence
                     for (const item of terminalSequence) {
-                        // Create and add the prompt line
                         const commandLine = createTerminalLine('hiddendevs@server:~$ ', '');
                         terminalHistory.appendChild(commandLine);
 
-                        // Get the command span where we'll type
                         const commandSpan = document.createElement('span');
                         commandSpan.className = 'command';
                         commandLine.appendChild(commandSpan);
 
-                        // Type the command character by character
                         await typeText(commandSpan, item.command);
 
-                        // Small pause after command is typed
                         await new Promise(resolve => setTimeout(resolve, 300));
 
-                        // Add output lines
                         for (const line of item.output) {
                             const outputLine = document.createElement('div');
                             outputLine.className = 'line';
                             outputLine.innerHTML = `<span class="command">${line}</span>`;
                             terminalHistory.appendChild(outputLine);
 
-                            // Small delay between output lines
                             await new Promise(resolve => setTimeout(resolve, 100));
 
-                            // Smooth scroll to bottom after adding each line
                             terminalBody.scrollTo({
                                 top: terminalBody.scrollHeight,
                                 behavior: 'smooth'
                             });
                         }
 
-                        // Pause between commands
                         await new Promise(resolve => setTimeout(resolve, 500));
                     }
 
-                    // After all commands, show the ASCII art
                     asciiArt.classList.remove('hidden');
 
-                    // After ASCII art, show options and command input
                     setTimeout(() => {
                         document.querySelector('.options').classList.remove('hidden');
                         document.querySelectorAll('.line.hidden').forEach(line => line.classList.remove('hidden'));
 
-                        // Final scroll to bottom
                         terminalBody.scrollTop = terminalBody.scrollHeight;
                     }, 800);
                 }
 
-                // Start the terminal sequence when page loads
                 setTimeout(() => {
                     runTypingSequence();
                 }, 500);
@@ -239,21 +218,16 @@
                     "Hack the mainframe (not recommended)"
                 ];
 
-                // Initialize the terminal to directly accept number keys 
-                // without requiring contenteditable or focusing
                 let currentInput = '';
 
-                // Handle option link clicks
                 document.querySelectorAll('.option-link').forEach(link => {
                     link.addEventListener('click', function(e) {
                         e.preventDefault();
                         const optionNumber = this.getAttribute('data-option');
 
-                        // Set the input to show the selected option
                         currentInput = optionNumber;
                         commandInput.textContent = currentInput;
 
-                        // Trigger the Enter key event to execute the command
                         const enterEvent = new KeyboardEvent('keydown', {
                             key: 'Enter', 
                             code: 'Enter',
@@ -265,45 +239,34 @@
                     });
                 });
 
-                // Handle direct keyboard events on the document
                 document.addEventListener('keydown', function(e) {
-                    // Only process number keys 1, 2, 3 and Enter
                     if (e.key === '1' || e.key === '2' || e.key === '3') {
-                        // Set the command input text
                         currentInput = e.key;
                         commandInput.textContent = currentInput;
                         cursor.style.display = 'inline-block';
 
-                        // Add visual feedback for option
                         const optionIndex = parseInt(currentInput) - 1;
                         const commandPreview = document.createElement('span');
                         commandPreview.className = 'command-preview';
                         commandPreview.textContent = ` (${optionTexts[optionIndex]})`;
 
-                        // Remove any existing previews
                         const existingPreviews = document.querySelectorAll('.command-preview');
                         existingPreviews.forEach(preview => preview.remove());
 
-                        // Add new preview after command input
                         commandInput.parentNode.insertBefore(commandPreview, cursor);
 
-                        // Scroll to make sure the input is visible
                         commandInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
 
-                    // Handle Enter key on document level
                     if (e.key === 'Enter' && currentInput) {
                         e.preventDefault();
 
-                        // Add executed command to terminal history
                         const executedCommand = document.createElement('div');
                         executedCommand.className = 'line';
                         executedCommand.innerHTML = `<span class="prompt">hiddendevs@server:~$</span> <span class="command">${currentInput}</span>`;
                         commandInput.parentNode.parentNode.insertBefore(executedCommand, commandInput.parentNode);
 
-                        // Special handling for option 3 - hack attempt
                         if (currentInput === '3') {
-                            // Show access denied message
                             const errorDiv = document.createElement('div');
                             errorDiv.className = 'error-message';
                             errorDiv.innerHTML = `
@@ -314,7 +277,6 @@
                             commandInput.parentNode.parentNode.insertBefore(errorDiv, commandInput.parentNode);
                             terminalBody.scrollTop = terminalBody.scrollHeight;
 
-                            // Reset the input
                             setTimeout(() => {
                                 currentInput = '';
                                 commandInput.textContent = '';
@@ -324,7 +286,6 @@
                             }, 500);
 
                         } else {
-                            // For options 1 and 2, navigate to the URL
                             let targetUrl = '/';
                             if (currentInput === '1') {
                                 targetUrl = '/';
@@ -340,12 +301,8 @@
                     }
                 });
 
-                // End of keyboard event handler
-
-                // Make sure cursor stays visible during typing and fix duplicate event handler
                 commandInput.addEventListener('focus', function() {
                     cursor.style.display = 'inline-block';
-                    // Scroll to the command input when it gets focus
                     commandInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 });
 
