@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | HiddenDevs</title>
+    <link rel="stylesheet" href="static\fonts\fira_code.css">
+    <link rel="stylesheet" href="static\css\404.css">
+    <link rel="stylesheet" href="static\css\glitch.css">
+    <style>
+        body {
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+/Edge */
+            user-select: none; /* Standard */
+        }
+    </style>
+</head>
+    <body>
+        <div class="page-container">
+            <img src="static\images\meber1.png" alt="Member 1" class="side-image">
+            <div class="container">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="close"></span>
+                        <span class="minimize"></span>
+                        <span class="maximize"></span>
+                    </div>
+                    <div class="terminal-title">hidden_devs_terminal.exe</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-content">
+                        <div class="line">
+                            <span class="prompt">hiddendevs@server:~$</span> 
+                            <span class="command">find /page</span>
+                        </div>
+
+                        <div class="line error">
+                            <span class="error-code">Error 404:</span> Page not found
+                        </div>
+
+                        <div class="line error-details">
+                            The requested resource could not be located on this server.
+                        </div>
+
+                        <div class="line">
+                            <span class="prompt">hiddendevs@server:~$</span> 
+                            <span class="command">debug --verbose</span>
+                        </div>
+
+                        <div class="line error-debug">
+                            <div class="glitch-text">Line 404: Page not found. Did you forget a semicolon?</div>
+                            <div>This route returned null.</div>
+                            <div>You've entered the void. There's nothing here.</div>
+                        </div>
+
+                        <div class="terminal-history" id="terminal-history">
+                            <!-- Terminal history will be dynamically populated here -->
+                        </div>
+
+                        <div class="ascii-art hidden" id="ascii-art">
+                            <pre>     __  __          __      __                 ____                              
+    /\ \/\ \  __    /\ \    /\ \               /\  _`\                            
+    \ \ \_\ \/\_\   \_\ \   \_\ \     __    ___\ \ \/\ \     __   __  __    ____  
+     \ \  _  \/\ \  /'_` \  /'_` \  /'__`\/' _ `\ \ \ \ \  /'__`\/\ \/\ \  /',__\ 
+      \ \ \ \ \ \ \/\ \L\ \/\ \L\ \/\  __//\ \/\ \ \ \_\ \/\  __/\ \ \_/ |/\__, `\
+       \ \_\ \_\ \_\ \___,_\ \___,_\ \____\ \_\ \_\ \____/\ \____\\ \___/ \/\____/
+        \/_/\/_/\/_/\/__,_ /\/__,_ /\/____/\/_/\/_/\/___/  \/____/ \/__/   \/___/ </pre>
+                            </div>
+
+                        <div class="options hidden">
+                            <div class="option-item">
+                                <span class="prompt">[1]</span> 
+                                <a href="#" class="option-link" data-option="1">Return to home page</a>
+                            </div>
+                            <div class="option-item">
+                                <span class="prompt">[2]</span> 
+                                <a href="#" class="option-link" data-option="2">Go back to previous page</a>
+                            </div>
+                            <div class="option-item">
+                                <span class="prompt">[3]</span> 
+                                <a href="#" class="option-link" data-option="3">Hack the mainframe (not recommended)</a>
+                            </div>
+                        </div>
+
+                        <div class="line hidden">
+                            <span class="prompt">hiddendevs@server:~$</span>
+                            <span class="command-input" id="command-input"></span><span class="cursor" id="cursor"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="overlay-effects">
+                    <div class="scanlines"></div>
+                    <div class="noise"></div>
+                </div>
+            </div>
+        </div>
+        <img src="static\images\meber2.png" alt="Member 2" class="side-image">
+    </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Force scroll to top of the page when it loads
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
+                const terminalHistory = document.getElementById('terminal-history');
+                const asciiArt = document.getElementById('ascii-art');
+                const terminalBody = document.querySelector('.terminal-body');
+
+                // Define the terminal commands and outputs
+                const terminalSequence = [
+                    {
+                        command: 'whoami',
+                        output: ['user@hiddendevs']
+                    },
+                    {
+                        command: 'pwd',
+                        output: ['/var/www/hiddendevs']
+                    },
+                    {
+                        command: 'cat /etc/issue',
+                        output: ['HiddenDevs Terminal OS v1.0.4', 'Running on secure SoloKernel']
+                    },
+                    {
+                        command: 'nav --options',
+                        output: []
+                    }
+                ];
+
+                // Function to create a terminal line element
+                function createTerminalLine(prompt, command = '', isTyping = false) {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'line';
+
+                    const promptSpan = document.createElement('span');
+                    promptSpan.className = 'prompt';
+                    promptSpan.textContent = prompt;
+                    lineDiv.appendChild(promptSpan);
+
+                    if (command) {
+                        const commandSpan = document.createElement('span');
+                        commandSpan.className = isTyping ? 'command typing' : 'command';
+                        commandSpan.textContent = command;
+                        lineDiv.appendChild(commandSpan);
+                    }
+
+                    return lineDiv;
+                }
+
+                // Function to type text character by character
+                function typeText(element, text, speed = 50) {
+                    return new Promise(resolve => {
+                        let i = 0;
+                        const typingEffect = setInterval(() => {
+                            if (i < text.length) {
+                                element.textContent += text.charAt(i);
+                                i++;
+                                // Smooth scroll to bottom while typing
+                                terminalBody.scrollTo({
+                                    top: terminalBody.scrollHeight,
+                                    behavior: 'smooth'
+                                });
+                            } else {
+                                clearInterval(typingEffect);
+                                resolve();
+                            }
+                        }, speed);
+                    });
+                }
+
+                // Execute the terminal sequence with realistic typing animation
+                async function runTypingSequence() {
+                    // Clear terminal history
+                    terminalHistory.innerHTML = '';
+
+                    // Run through each command in the sequence
+                    for (const item of terminalSequence) {
+                        // Create and add the prompt line
+                        const commandLine = createTerminalLine('hiddendevs@server:~$ ', '');
+                        terminalHistory.appendChild(commandLine);
+
+                        // Get the command span where we'll type
+                        const commandSpan = document.createElement('span');
+                        commandSpan.className = 'command';
+                        commandLine.appendChild(commandSpan);
+
+                        // Type the command character by character
+                        await typeText(commandSpan, item.command);
+
+                        // Small pause after command is typed
+                        await new Promise(resolve => setTimeout(resolve, 300));
+
+                        // Add output lines
+                        for (const line of item.output) {
+                            const outputLine = document.createElement('div');
+                            outputLine.className = 'line';
+                            outputLine.innerHTML = `<span class="command">${line}</span>`;
+                            terminalHistory.appendChild(outputLine);
+
+                            // Small delay between output lines
+                            await new Promise(resolve => setTimeout(resolve, 100));
+
+                            // Smooth scroll to bottom after adding each line
+                            terminalBody.scrollTo({
+                                top: terminalBody.scrollHeight,
+                                behavior: 'smooth'
+                            });
+                        }
+
+                        // Pause between commands
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+
+                    // After all commands, show the ASCII art
+                    asciiArt.classList.remove('hidden');
+
+                    // After ASCII art, show options and command input
+                    setTimeout(() => {
+                        document.querySelector('.options').classList.remove('hidden');
+                        document.querySelectorAll('.line.hidden').forEach(line => line.classList.remove('hidden'));
+
+                        // Final scroll to bottom
+                        terminalBody.scrollTop = terminalBody.scrollHeight;
+                    }, 800);
+                }
+
+                // Start the terminal sequence when page loads
+                setTimeout(() => {
+                    runTypingSequence();
+                }, 500);
+
+                const commandInput = document.getElementById('command-input');
+                const cursor = document.getElementById('cursor');
+                const options = ['1', '2', '3'];
+                const optionTexts = [
+                    "Return to home page",
+                    "Go back to previous page",
+                    "Hack the mainframe (not recommended)"
+                ];
+
+                // Initialize the terminal to directly accept number keys 
+                // without requiring contenteditable or focusing
+                let currentInput = '';
+
+                // Handle option link clicks
+                document.querySelectorAll('.option-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const optionNumber = this.getAttribute('data-option');
+
+                        // Set the input to show the selected option
+                        currentInput = optionNumber;
+                        commandInput.textContent = currentInput;
+
+                        // Trigger the Enter key event to execute the command
+                        const enterEvent = new KeyboardEvent('keydown', {
+                            key: 'Enter', 
+                            code: 'Enter',
+                            keyCode: 13,
+                            which: 13,
+                            bubbles: true
+                        });
+                        document.dispatchEvent(enterEvent);
+                    });
+                });
+
+                // Handle direct keyboard events on the document
+                document.addEventListener('keydown', function(e) {
+                    // Only process number keys 1, 2, 3 and Enter
+                    if (e.key === '1' || e.key === '2' || e.key === '3') {
+                        // Set the command input text
+                        currentInput = e.key;
+                        commandInput.textContent = currentInput;
+                        cursor.style.display = 'inline-block';
+
+                        // Add visual feedback for option
+                        const optionIndex = parseInt(currentInput) - 1;
+                        const commandPreview = document.createElement('span');
+                        commandPreview.className = 'command-preview';
+                        commandPreview.textContent = ` (${optionTexts[optionIndex]})`;
+
+                        // Remove any existing previews
+                        const existingPreviews = document.querySelectorAll('.command-preview');
+                        existingPreviews.forEach(preview => preview.remove());
+
+                        // Add new preview after command input
+                        commandInput.parentNode.insertBefore(commandPreview, cursor);
+
+                        // Scroll to make sure the input is visible
+                        commandInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    // Handle Enter key on document level
+                    if (e.key === 'Enter' && currentInput) {
+                        e.preventDefault();
+
+                        // Add executed command to terminal history
+                        const executedCommand = document.createElement('div');
+                        executedCommand.className = 'line';
+                        executedCommand.innerHTML = `<span class="prompt">hiddendevs@server:~$</span> <span class="command">${currentInput}</span>`;
+                        commandInput.parentNode.parentNode.insertBefore(executedCommand, commandInput.parentNode);
+
+                        // Special handling for option 3 - hack attempt
+                        if (currentInput === '3') {
+                            // Show access denied message
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.innerHTML = `
+                                <div class="error">ACCESS DENIED: Insufficient privileges.</div>
+                                <div class="error-details">User identified as: skid@${(Math.random().toString(36).substring(2, 8))}.</div>
+                                <div class="error-details">IP logged and reported to security team, they laughed.</div>
+                            `;
+                            commandInput.parentNode.parentNode.insertBefore(errorDiv, commandInput.parentNode);
+                            terminalBody.scrollTop = terminalBody.scrollHeight;
+
+                            // Reset the input
+                            setTimeout(() => {
+                                currentInput = '';
+                                commandInput.textContent = '';
+                                const existingPreviews = document.querySelectorAll('.command-preview');
+                                existingPreviews.forEach(preview => preview.remove());
+                                cursor.style.display = 'inline-block';
+                            }, 500);
+
+                        } else {
+                            // For options 1 and 2, navigate to the URL
+                            let targetUrl = '/';
+                            if (currentInput === '1') {
+                                targetUrl = '/';
+                            } else if (currentInput === '2') {
+                                targetUrl = 'https://hiddendevs.com';
+                            }
+
+                            cursor.style.display = 'none';
+                            setTimeout(() => {
+                                window.location.href = targetUrl;
+                            }, 300);
+                        }
+                    }
+                });
+
+                // End of keyboard event handler
+
+                // Make sure cursor stays visible during typing and fix duplicate event handler
+                commandInput.addEventListener('focus', function() {
+                    cursor.style.display = 'inline-block';
+                    // Scroll to the command input when it gets focus
+                    commandInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+
+                commandInput.addEventListener('blur', function() {
+                    cursor.style.display = 'none';
+                });
+            });
+        </script>
+    </body>
+    </html>
